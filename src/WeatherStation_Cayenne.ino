@@ -1,5 +1,5 @@
 /*
-Lora Academy week4 - WeatherStation (custom payload format)
+Lora Academy week4 - WeatherStation exercice
 
 Tested on Arduino Uno
 Lora device used:
@@ -16,7 +16,7 @@ Sensors used:
 #include "RAK811.h"
 #include <SoftwareSerial.h>
 #include <stdio.h>
-
+#include <CayenneLPP.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME680.h>
@@ -42,10 +42,10 @@ Sensors used:
 Adafruit_BME680 bme; // I2C
 
 typedef struct BMEReading {
-	uint16_t temperature;
-	uint16_t pressure;
-	uint16_t humidity;
-	uint16_t gas;
+	float temperature;
+	float pressure;
+	float humidity;
+	float gas;
 	bool error;
 } BMEReading;
 
@@ -55,12 +55,13 @@ SoftwareSerial debugSerial(debugRXpin,debugTXpin);
 
 RAK811 lora(loraSerial, debugSerial);
 
+CayenneLPP lpp(51);
 
 bool joined = false;
 
 //----function declarations----
-byte getMoisture(int pin);
-byte getLight(int pin);
+float getMoisture(int pin);
+float getLight(int pin);
 BMEReading getBMEReading();
 void sendSensorData();
 void receiveDownLinkMessage();
@@ -93,6 +94,7 @@ void setup() {
 		loraSerial.read();
 	}
 	
+
 	//Note: devEUI, appEUI and AppKey have been set via manual AT commands on device
 	//I couldn't get the combination lora.rk_initOTAA and bme.performReading() to work together...even when lora.rk_initOTAA
 	//is in setup() and bme.performReading() is in loop()...
@@ -149,30 +151,42 @@ void loop()
 }
 
 void sendSensorData(){
-	byte moisture = getMoisture(MoisturePin);
-	byte light = getLight(LDRPin);
+	
+	float moisture = getMoisture(MoisturePin);
+	float light = getLight(LDRPin);
 	BMEReading bmeReading = getBMEReading();
 	
 	if(joined){
 		
 		unsigned char tries = 0;
-
 		
-		char payload[21];
-		
-		sprintf(payload, "%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
-		moisture,
-		light,
-		highByte(bmeReading.temperature), lowByte(bmeReading.temperature),
-		highByte(bmeReading.pressure), lowByte(bmeReading.pressure),
-		highByte(bmeReading.humidity), lowByte(bmeReading.humidity),
-		highByte(bmeReading.gas), lowByte(bmeReading.gas));
+		lpp.reset();
+		lpp.addRelativeHumidity(1, moisture);
+		lpp.addAnalogInput(2, light);
+		lpp.addTemperature(3, bmeReading.temperature);
+		lpp.addBarometricPressure(4, bmeReading.pressure);
+		lpp.addRelativeHumidity(5, bmeReading.humidity);
+		lpp.addAnalogInput(6, bmeReading.gas);
 		
 		while (true) {
 
 			//for some reason the RAK811 module keeps jumping back to SF12 even with a gateway
 			//a few meters away...so for testing I force it to SF7 (on each send!)
 			lora.rk_setRate(5);
+			
+			
+			//convert the lpp byte array into hex string
+			
+			int size = lpp.getSize();
+			
+			byte * buffer = lpp.getBuffer();
+			char payload[2*size + 1];
+			
+			int i;
+			for (i=0; i<size; i++) {
+				sprintf(payload+i*2, "%02x", buffer[i]);
+			}
+			payload[i*2] = 0;
 			
 			if (lora.rk_sendData(REQUIRE_ACK, APP_PORT, payload)) {
 				return;
@@ -241,42 +255,41 @@ BMEReading getBMEReading()
 
 	debugSerial.println();
 
-	bmeReading.temperature = bme.temperature * 100;
-	//lowest and highest atmospheric pressure ever recorded in my country Belgium: 950 and 1050
-	//so -900 and *100 for the decimals makes the payload fit in a unint16
-	bmeReading.pressure = ((bme.pressure / 100) - 900) * 100; 
-	bmeReading.humidity = bme.humidity * 100;
-	bmeReading.gas = (bme.gas_resistance / 1000.0) * 100;
+	bmeReading.temperature = float(bme.temperature);
+	bmeReading.pressure = float(bme.pressure / 100.0); 
+	bmeReading.humidity = float(bme.humidity);
+	bmeReading.gas = float(bme.gas_resistance / 1000.0);
 
 	return bmeReading;
 }
 
-byte getMoisture(int pin){
+float getMoisture(int pin){
 
 
 	digitalWrite(MoisturePowerPin, HIGH); //turn sensor on
 	delay(10);
 	
-	byte moisture = map(analogRead(MoisturePin), 0, 1023, 0, 255);
+	float moisture = map(analogRead(MoisturePin), 0, 1023, 0.0, 100.0);
 	
 	digitalWrite(MoisturePowerPin, LOW);//turn the sensor off
 	
 	debugSerial.print("MOISTURE = ");
 	debugSerial.print(moisture);
-	debugSerial.println();
+	debugSerial.println(" %");
 	
 	
 	return moisture;
 
 }
 
-byte getLight(int pin){
+float getLight(int pin){
 
-	byte light = map(analogRead(pin), 0, 1023, 0, 255);
+
+	float light = map(analogRead(LDRPin), 0, 1023, 0.0, 100.0);
 	
 	debugSerial.print("LIGHT = ");
 	debugSerial.print(light);
-	debugSerial.println();
+	debugSerial.println(" %");
 	
 	return light;
 }
