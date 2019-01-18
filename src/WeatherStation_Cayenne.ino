@@ -12,7 +12,7 @@ Sensors used:
 */
 
 
-#include <Arduino.h>
+//#include <Arduino.h>
 #include "RAK811.h"
 #include <SoftwareSerial.h>
 #include <stdio.h>
@@ -56,6 +56,8 @@ SoftwareSerial debugSerial(debugRXpin,debugTXpin);
 RAK811 lora(loraSerial, debugSerial);
 
 CayenneLPP lpp(51);
+
+uint8_t led = 0;
 
 bool joined = false;
 
@@ -167,6 +169,7 @@ void sendSensorData(){
 		lpp.addBarometricPressure(4, bmeReading.pressure);
 		lpp.addRelativeHumidity(5, bmeReading.humidity);
 		lpp.addAnalogInput(6, bmeReading.gas);
+		lpp.addDigitalOutput(7, led);
 		
 		while (true) {
 
@@ -214,14 +217,18 @@ void receiveDownLinkMessage(){
 		
 		if (r.startsWith("at+recv=0,")) {
 
-			if(r.endsWith("01"))
+			if(r.endsWith("64ff"))
 			{
+				led = 1;
 				digitalWrite(LED_BUILTIN, HIGH);
 			}
-			else if(r.endsWith("00"))
+			else if(r.endsWith("00ff"))
 			{
+				led = 0;
 				digitalWrite(LED_BUILTIN, LOW);
 			}
+			
+
 		}
 	}
 	

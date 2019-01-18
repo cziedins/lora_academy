@@ -11,8 +11,9 @@ Sensors used:
 	Adafruit BME680
 */
 
+//uncomment for Atmel Studio
+//#include <Arduino.h> 
 
-#include <Arduino.h>
 #include "RAK811.h"
 #include <SoftwareSerial.h>
 #include <stdio.h>
