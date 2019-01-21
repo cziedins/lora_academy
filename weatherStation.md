@@ -30,6 +30,9 @@ The recommended
 ![weatherstation wiring](./images/weatherStationWiring.JPG)
 
 
+### Cayenne
+![weatherstation wiring](./images/cayenne.png)
+
 ### Note
 The RAK WisNode Lora board is an arduino shield with a RAK811 module. I didn't stack it on top of the Arduino so I could plug a debugger (the white box on the photo). Similar to the Sodaq Explorer board the RAK811 aslo accepts serial communication (AT commands).
 However the RAK library API requires hex string messages instead of a byte array.
