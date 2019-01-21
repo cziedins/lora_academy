@@ -16,8 +16,8 @@ You may pick other hardware.
 
 ### Hardware I used for this assignment
 
-As the Sodaq Explorer was not available when I started the course I went the RAK Lora Starter Kit which also includes a gateway.
-For pressure, temperature, humidity and gas I took the combined board from Adafruit.
+As the Sodaq Explorer was not available when I started the course I took the RAK Lora Starter Kit which also includes a gateway.
+For pressure, temperature, humidity and gas I went for the combined BME680 board from Adafruit.
 Added soil moisture and light sensors.
 
 - Arduino Uno
@@ -36,8 +36,11 @@ Added soil moisture and light sensors.
 ### Cayenne
 ![weatherstation wiring](./images/cayenne.png)
 
+### TTN Log
+![ttn log](./images/ttn_log.png)
+
 ### Note
-The RAK WisNode Lora board is an arduino shield with a RAK811 module. I didn't stack it on top of the Arduino so I could plug a debugger (the white box on the photo). Similar to the Sodaq Explorer board the RAK811 aslo accepts serial communication (AT commands).
+The RAK WisNode Lora board is an arduino shield with a RAK811 module. I didn't stack it on top of the Arduino so I could plug-in a debugger (the white box on the photo). Similar to the Sodaq Explorer board the RAK811 aslo accepts serial communication (AT commands).
 However the RAK library API requires hex string messages instead of a byte array.
 
 ### Code (CayenneLPP)
