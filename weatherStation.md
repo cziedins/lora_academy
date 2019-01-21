@@ -8,15 +8,18 @@
 - Setup a Cayenne myDevices dashboard and create graphs to visualize the sensor data over time. Add the public URL of the dashboard in the Discussion section of the course, or post a screenshot.
 
 Recommended sensors to use:
-BMP280 - Barometric Pressure Sensor
-DHT 22 - Temperature and humidity sensor
-MQ4 - Methane CNG Gas Sensor
+- BMP280 - Barometric Pressure Sensor
+- DHT 22 - Temperature and humidity sensor
+- MQ4 - Methane CNG Gas Sensor
 
 You may pick other hardware.
 
 ### Hardware I used for this assignment
 
-The recommended 
+As the Sodaq Explorer was not available when I started the course I went the RAK Lora Starter Kit which also includes a gateway.
+For pressure, temperature, humidity and gas I took the combined board from Adafruit.
+Added soil moisture and light sensors.
+
 - Arduino Uno
 - RAK WisNode Lora (Arduino shield with Lora chip)
 - Sparkfun Soil Moisture sensor
@@ -36,8 +39,8 @@ The recommended
 ### Note
 The RAK WisNode Lora board is an arduino shield with a RAK811 module. I didn't stack it on top of the Arduino so I could plug a debugger (the white box on the photo). Similar to the Sodaq Explorer board the RAK811 aslo accepts serial communication (AT commands).
 However the RAK library API requires hex string messages instead of a byte array.
-The src folder contains the Arduino code.
 
+### Code (CayenneLPP)
 ```cpp
 
 
