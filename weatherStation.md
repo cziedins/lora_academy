@@ -130,9 +130,7 @@ void setup() {
 	if (lora.rk_joinLoRaNetwork(JOIN_MODE))
 	{
 		while(last < 20000){
-			
 			if(loraSerial.available()){
-				
 				String r = loraSerial.readStringUntil('\n');
 				
 				if(r.startsWith("at+recv=3,")){
@@ -141,7 +139,6 @@ void setup() {
 					joined = true;
 					break;
 				}
-				
 			}
 			
 			last = millis();
