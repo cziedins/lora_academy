@@ -28,7 +28,7 @@ The recommended
 
 <img src="./images/weatherStation.jpg" alt="image" width="400"/><br/>
 
-<img src="./images/weatherStation.png" alt="drawing" width="600"/><br/>
+<img src="./images/weatherStationWiring.JPG" alt="drawing" width="600"/><br/>
 
 ### Note
 The RAK WisNode Lora board is an arduino shield with a RAK811 module. I didn't stack it on top of the Arduino so I could plug a debugger (the white box on the photo). Similar to the Sodaq Explorer board the RAK811 aslo accepts serial communication (AT commands).
