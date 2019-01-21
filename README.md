@@ -25,8 +25,8 @@ MQ4 - Methane CNG Gas Sensor
 
 ### Wiring
 
-![Breadboard](./images/weatherStation.jpg) 
-![Pinout](./images/weatherStation.png)
+![](./images/weatherStation.jpg =250x) 
+![](./images/weatherStation.png =250x)
 
 ### Note
 The RAK WisNode Lora board is an arduino shield with a RAK811 module. I didn't stack it on top of the Arduino so I could plug a debugger (the white box on the photo). Just as for the Explorer board the RAK811 aslo accepts AT commands.
